@@ -26,7 +26,6 @@ def check_task():
     ready_id = (''.join(map(str, phone_id)).strip("[''])"))
     with open('userdata.txt', 'r') as f:
         if ready_id in f.read():
-            print('Есть!')
             t.cancel()
             get_another_info()
         else:
@@ -60,7 +59,7 @@ def callback_query(call):
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выполнено",
                               reply_markup=None)
         bot.send_message(admin_id, "Админ, задание выполнено")
-    elif call.data == "cb_no":
+    if call.data == "cb_no":
         bot.answer_callback_query(call.id, "")
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Не Выполнено",
                               reply_markup=None)
