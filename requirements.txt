@@ -1,0 +1,2 @@
+pygsheets~=2.0.6
+telebot~=0.0.5
