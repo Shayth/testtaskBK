@@ -47,26 +47,34 @@ def get_another_info():
     markup_inline.row_width = 2
     markup_inline.add(InlineKeyboardButton("Выполнено", callback_data="cb_yes"),
                       InlineKeyboardButton("Не выполнено", callback_data="cb_no"))
-    bot.send_message(ready_id, f'{ready_test_table}\nВремя на ответ:{ready_answer_time} секунд',
+    butmsg = bot.send_message(ready_id, f'{ready_test_table}\nВремя на ответ: {ready_answer_time} секунд',
                      reply_markup=markup_inline)
+    print('Кнопки вызваны')
+    start_time = 0
+    while start_time < int(ready_answer_time):
+        start_time = start_time + 1
+        time.sleep(1)
+    else:
+        bot.edit_message_text("Время истекло", chat_id=ready_id, message_id=butmsg.message_id)
+        bot.send_message(admin_id, "[Админ, время выполнения задания истекло]")
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    admin_id = 434197175
     if call.data == "cb_yes":
         bot.answer_callback_query(call.id, "")
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выполнено",
                               reply_markup=None)
-        bot.send_message(admin_id, "Админ, задание выполнено")
+        bot.send_message(admin_id, "[Админ, задание выполнено]")
     if call.data == "cb_no":
         bot.answer_callback_query(call.id, "")
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Не Выполнено",
                               reply_markup=None)
-        bot.send_message(admin_id, "Админ, задание не выполнено")
+        bot.send_message(admin_id, "[Админ, задание не выполнено]")
 
 
 if __name__ == '__main__':
+    admin_id = admin_id_tg
     gc = pygsheets.authorize(service_file=creds_path)
     sh = gc.open_by_url(table_url)
     wks = sh[0]
