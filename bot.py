@@ -32,6 +32,17 @@ def check_task():
             pass
 
 
+# def clear_task():
+#     wks.update_values('A2', '')
+
+
+def remove_inline_keyboard(ready_id, message_id):
+    timeout_text = "Время истекло"
+    bot.edit_message_reply_markup(chat_id=ready_id, message_id=message_id, reply_markup=None)
+    bot.edit_message_text(chat_id=ready_id, message_id=message_id, text="Время истекло")
+    check_task()
+
+
 def get_another_info():
     phone_id = wks.get_values('A2', 'A2')
     test_table = wks.get_values('B2', 'B2')
@@ -47,8 +58,11 @@ def get_another_info():
     markup_inline.row_width = 2
     markup_inline.add(InlineKeyboardButton("Выполнено", callback_data="cb_yes"),
                       InlineKeyboardButton("Не выполнено", callback_data="cb_no"))
-    butmsg = bot.send_message(ready_id, f'{ready_test_table}\nВремя на ответ: {ready_answer_time} секунд',
-                     reply_markup=markup_inline)
+    message_button = bot.send_message(ready_id, f'{ready_test_table}\nВремя на ответ: {ready_answer_time} секунд',
+                                      reply_markup=markup_inline)
+    an_t = threading.Timer(float(ready_answer_time), remove_inline_keyboard, args=(ready_id, message_button.message_id))
+    an_t.start()
+
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
